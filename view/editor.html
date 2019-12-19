@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Material Design for Bootstrap fonts and icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Ubuntu+Mono">
+
+    <!-- Material Design for Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+          integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+
+    <title>SparkDown - Editor</title>
+
+    <style>
+        body {
+            /*font-family: 'Ubuntu Mono', sans-serif;*/
+        }
+        .col {
+            padding: 0;
+        }
+        .md-src-form {
+            margin-bottom: 0;
+        }
+        .md-src-div {
+            padding-top: 0;
+            margin-bottom: 0;
+        }
+        .left, .left:focus {
+            padding: 1rem;
+            background-image: none;
+            resize: none;
+            height: 100vh;
+            background-color: whitesmoke;
+            font-size: 1rem;
+            overflow-y: auto;
+        }
+        .right {
+            height: 100vh;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <form class="md-src-form">
+                <div class="form-group bmd-form-group md-src-div">
+                    <textarea class="form-control left" id="md-src"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            <div class="md-out-div">
+                <div class="right" id="md-output">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+        integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+        integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+        crossorigin="anonymous"></script>
+<script>$(document).ready(function () {
+    $('body').bootstrapMaterialDesign();
+});</script>
+
+<!-- Customized JavaScript -->
+<script>
+    const { ipcRenderer } = require('electron');
+    ipcRenderer.on('render-md-result', (event, md_result) => {
+        console.log(md_result);
+        document.getElementById('md-output').innerHTML = md_result;
+    });
+
+    ipcRenderer.on('user-settings-result', (event, settings_result) => {
+        document.getElementsByTagName('body')[0].style.fontFamily = settings_result['fontFamily'];
+        console.log('User settings applied.');
+    });
+
+    document.getElementById('md-src').addEventListener('keyup', render_md);
+    function render_md(){
+        let md_src_ele = document.getElementById('md-src');
+        console.log('prepare to render:', md_src_ele.value);
+        ipcRenderer.send('render-md', md_src_ele.value)
+    }
+
+    ipcRenderer.send('request-user-settings');
+</script>
+</body>
+</html>

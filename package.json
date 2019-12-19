@@ -1,0 +1,27 @@
+{
+  "name": "sparkdown",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sparkmemo/SparkDown.git"
+  },
+  "author": "Tongze Wang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sparkmemo/SparkDown/issues"
+  },
+  "homepage": "https://github.com/sparkmemo/SparkDown#readme",
+  "devDependencies": {
+    "electron": "^7.1.5"
+  },
+  "dependencies": {
+    "electron-store": "^5.1.0",
+    "emmet": "^2.0.0-rc.9",
+    "marked": "^0.8.0"
+  }
+}
