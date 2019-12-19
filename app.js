@@ -344,3 +344,18 @@ ipcMain.on('change-user-settings', (event, new_settings) => {
 ipcMain.on('close-settings-window', (event) => {
     settings.close();
 });
+
+ipcMain.on('md-process-drag-drop', (event, file) => {
+    console.log(`Processing drag&drop file: ${file.name}`);
+    let fileNameArray = file.name.split('.');
+    let file_suffix = fileNameArray[fileNameArray.length - 1];
+    let img_suffix = new RegExp(/^(jpg|png)$/);
+    if(img_suffix.test(file_suffix)){
+        let img_md = `\n![](file://${encodeURI(file.path)})`;
+        editor.webContents.send('patch-md-src', img_md);
+    }
+});
+
+ipcMain.on('get-md-src-result', (event, get_md_result) => {
+    console.log(get_md_result);
+});

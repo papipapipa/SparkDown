@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Material Design for Bootstrap fonts and icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Ubuntu+Mono">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Ubuntu+Mono">
 
     <!-- Material Design for Bootstrap CSS -->
     <link rel="stylesheet"
@@ -19,16 +20,20 @@
         body {
             /*font-family: 'Ubuntu Mono', sans-serif;*/
         }
+
         .col {
             padding: 0;
         }
+
         .md-src-form {
             margin-bottom: 0;
         }
+
         .md-src-div {
             padding-top: 0;
             margin-bottom: 0;
         }
+
         .left, .left:focus {
             padding: 1rem;
             background-image: none;
@@ -38,10 +43,15 @@
             font-size: 1rem;
             overflow-y: auto;
         }
+
         .right {
             height: 100vh;
             padding: 1rem;
             overflow-y: auto;
+        }
+
+        .right img {
+            width: 100%;
         }
     </style>
 </head>
@@ -51,7 +61,8 @@
         <div class="col">
             <form class="md-src-form">
                 <div class="form-group bmd-form-group md-src-div">
-                    <textarea class="form-control left" id="md-src"></textarea>
+                    <textarea class="form-control left" id="md-src" ondrop="dropHandler(event);"
+                              ondragover="dragOverHandler(event);"></textarea>
                 </div>
             </form>
         </div>
@@ -66,22 +77,30 @@
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+<!-- Fix jQuery in Electron.js -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"
+        integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+<script>if (window.module) module = window.module;</script>
+
 <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
         integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
         crossorigin="anonymous"></script>
+<!-- SnackbarJS plugin -->
+<script src="https://cdn.jsdelivr.net/gh/FezVrasta/snackbarjs@1.1.0/dist/snackbar.min.js"></script>
+
 <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
         integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
         crossorigin="anonymous"></script>
-<script>$(document).ready(function () {
-    $('body').bootstrapMaterialDesign();
-});</script>
+<script>
+    $(document).ready(() => {
+        $('body').bootstrapMaterialDesign();
+    });
+</script>
 
 <!-- Customized JavaScript -->
 <script>
-    const { ipcRenderer } = require('electron');
+    const {ipcRenderer} = require('electron');
     ipcRenderer.on('render-md-result', (event, md_result) => {
         console.log(md_result);
         document.getElementById('md-output').innerHTML = md_result;
@@ -93,13 +112,51 @@
     });
 
     document.getElementById('md-src').addEventListener('keyup', render_md);
-    function render_md(){
-        let md_src_ele = document.getElementById('md-src');
+    let md_src_ele = document.getElementById('md-src');
+
+    function render_md() {
         console.log('prepare to render:', md_src_ele.value);
         ipcRenderer.send('render-md', md_src_ele.value)
     }
 
     ipcRenderer.send('request-user-settings');
+
+    async function dropHandler(event) {
+        console.log('File(s) dropped');
+
+        // Prevent default behavior (Prevent file from being opened)
+        event.preventDefault();
+        // Use DataTransferItemList interface to access the file(s)
+        for (let i = 0; i < event.dataTransfer.files.length; i++) {
+            console.log('... file[' + i + '].name = ' + event.dataTransfer.files[i].name);
+            let file = event.dataTransfer.files[i];
+            let dropFile = {
+                'name': file.name,
+                'path': file.path,
+            };
+            console.log(dropFile);
+            ipcRenderer.send('md-process-drag-drop', dropFile);
+        }
+    }
+
+    function dragOverHandler(event) {
+        // Prevent default behavior (Prevent file from being opened)
+        event.preventDefault();
+    }
+
+    ipcRenderer.on('put-md-src', (event, new_md_src) => {
+        md_src_ele.value = new_md_src;
+        ipcRenderer.send('render-md', md_src_ele.value)
+    });
+
+    ipcRenderer.on('patch-md-src', (event, delta_md_src) => {
+        md_src_ele.value += delta_md_src;
+        ipcRenderer.send('render-md', md_src_ele.value);
+    });
+
+    ipcRenderer.on('get-md-src', (event) => {
+        ipcRenderer.send('get-md-src-result', md_src_ele.value);
+    });
 </script>
 </body>
 </html>
