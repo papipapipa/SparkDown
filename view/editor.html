@@ -78,7 +78,10 @@
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <!-- Fix jQuery in Electron.js -->
-<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+<script>if (typeof module === 'object') {
+    window.module = module;
+    module = undefined;
+}</script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"
         integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 <script>if (window.module) module = window.module;</script>
@@ -157,6 +160,47 @@
     ipcRenderer.on('get-md-src', (event) => {
         ipcRenderer.send('get-md-src-result', md_src_ele.value);
     });
+</script>
+<script>
+    const remote = require('electron').remote;
+    const Menu = remote.Menu;
+    const MenuItem = remote.MenuItem;
+
+    const contextMenuTemplate = [
+        {
+            role: 'undo'
+        },
+        {
+            role: 'redo'
+        },
+        {
+            type: 'separator'
+        },
+        {
+            role: 'cut'
+        },
+        {
+            role: 'copy'
+        },
+        {
+            role: 'paste'
+        },
+        {
+            role: 'delete'
+        },
+        {
+            type: 'separator'
+        },
+        {
+            role: 'selectAll'
+        }];
+    const menu = Menu.buildFromTemplate(contextMenuTemplate);
+
+
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        menu.popup();
+    }, false)
 </script>
 </body>
 </html>
