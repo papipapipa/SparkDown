@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Ubuntu+Mono">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons|Ubuntu+Mono">
 
     <title>SparkDown - Settings</title>
     <style>
@@ -19,16 +20,32 @@
     </style>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="settings">
         <form>
             <div class="form-group">
-                <label for="fontFamily">Font Family</label>
-                <input type="text" id="fontFamily" class="form-control">
+                <label for="fontFamily">Customized Font Family</label>
+                <input type="text" id="fontFamily" class="form-control" readonly>
             </div>
             <div class="form-group form-check">
-                <input type="checkbox" id="emmet-check" class="form-check-input">
-                <label for="emmet-check">Enable Emmet Support</label>
+                <input type="checkbox" id="fontOverrideCheck" class="form-check-input" onclick="toggleFontFamilyArea()">
+                <label for="fontOverrideCheck">Override the default fonts in current theme with above value.</label>
+            </div>
+            <div class="form-group">
+                <label for="imgHandleOption">Image Assets Handling Option</label>
+                <select id="imgHandleOption" class="form-control">
+                    <option value="0">Do nothing</option>
+<!--                    <option value="1">Copy all image assets to ./${{fileName}}/assets folder</option>-->
+<!--                    <option value="2">Copy to a specific location</option>-->
+                </select>
+                <small class="form-text text-muted">How do you want SparkDown to handle image assets?</small>
+            </div>
+            <div class="form-group">
+                <label for="uiLangOption">UI Language Option</label>
+                <select id="uiLangOption" class="form-control">
+                    <option value="en-US">English (U.S.)</option>
+<!--                    <option value="zh-CN">中文 (中国)</option>-->
+                </select>
             </div>
             <button class="btn btn-primary" id="apply-btn">Apply</button>
             <button class="btn btn-secondary" id="ok-btn">OK</button>
@@ -38,9 +55,14 @@
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script>if (typeof module === 'object') {
+    window.module = module;
+    module = undefined;
+}</script>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
+<script>if (window.module) module = window.module;</script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
@@ -48,16 +70,23 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
 <script>
-    const { ipcRenderer } = require('electron');
+    const {ipcRenderer} = require('electron');
 
-    document.getElementById('apply-btn').addEventListener('click',() => {
+    // Collect all user options
+    document.getElementById('apply-btn').addEventListener('click', (e) => {
+        e.preventDefault();
         let new_settings = {
-            'fontFamily': document.getElementById('fontFamily').value
+            'fontFamily': document.getElementById('fontFamily').value,
+            'fontOverrideCheck': document.getElementById('fontOverrideCheck').checked,
+            'imgHandleOption': document.getElementById('imgHandleOption').value,
+            'uiLangOption': document.getElementById('uiLangOption').value
         };
+        console.log(new_settings);
         ipcRenderer.send('change-user-settings', new_settings);
     });
 
-    document.getElementById('ok-btn').addEventListener('click',() => {
+    // Close settings page
+    document.getElementById('ok-btn').addEventListener('click', () => {
         ipcRenderer.send('close-settings-window');
     });
 
@@ -67,10 +96,21 @@
     });
 
     ipcRenderer.send('request-user-settings');
+
     ipcRenderer.on('user-settings-result', (event, settings_result) => {
         document.getElementById('fontFamily').value = settings_result['fontFamily'];
+        document.getElementById('fontOverrideCheck').checked = settings_result['fontOverrideCheck'];
+        document.getElementById('imgHandleOption').value = settings_result['imgHandleOption'];
+        document.getElementById('uiLangOption').value = settings_result['uiLangOption'];
+        if (settings_result['fontOverrideCheck'] === true){
+            document.getElementById('fontFamily').removeAttribute('readonly');
+        }
         console.log('User settings received.');
     });
+
+    function toggleFontFamilyArea() {
+        document.getElementById('fontFamily').toggleAttribute('readonly');
+    }
 </script>
 </body>
 </html>

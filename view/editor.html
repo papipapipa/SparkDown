@@ -152,7 +152,16 @@
     });
 
     ipcRenderer.on('user-settings-result', (event, settings_result) => {
-        // document.getElementsByTagName('body')[0].style.fontFamily = settings_result['fontFamily'];
+        if (settings_result.fontOverrideCheck === true) {
+            document.getElementById('md-src').style.cssText = `font-family: ${settings_result.fontFamily};`;
+            document.getElementById('md-output').style.cssText = `font-family: ${settings_result.fontFamily};`;
+            console.log('Font overriding completed.');
+        } else {
+            document.getElementById('md-src').style.cssText = '';
+            document.getElementById('md-output').style.cssText = '';
+            console.log('Cancel font overriding completed.');
+        }
+        // $('head').append(`<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/${settings_result.highlightThemeOption}.min.css">`);
         console.log('User settings applied.');
     });
 

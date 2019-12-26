@@ -242,7 +242,10 @@ let menu_template = [
                 }
             },
             {
-                label: 'Version: 1.0.0 (Beta)'
+                label: 'Version: 0.1.0 (Beta)'
+            },
+            {
+                label: 'Release Date: 2020/01/01'
             }
         ]
     },
@@ -274,7 +277,7 @@ function createEditor() {
 
 function createSettings() {
     settings = new BrowserWindow({
-        width: 960,
+        width: 480,
         height: 540,
         webPreferences: {
             nodeIntegration: true
@@ -305,7 +308,7 @@ app.on('activate', () => {
 
 
 ipcMain.on('render-md', (event, md_src) => {
-    console.log('rendering:', md_src);
+    // console.log('rendering:', md_src);
     event.reply('render-md-result', marked(md_src));
 });
 
@@ -315,7 +318,7 @@ ipcMain.on('request-user-settings', (event) => {
 });
 
 ipcMain.on('change-user-settings', (event, new_settings) => {
-    console.log('New user settings:', new_settings);
+    // console.log('New user settings:', new_settings);
     store.set('settings', new_settings);
     editor.webContents.send('user-settings-result', store.get('settings'));
 });
