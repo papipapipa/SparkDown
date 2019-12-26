@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, shell, nativeTheme} = require('electron');
 const marked = require('marked');
 const Store = require('electron-store');
 
@@ -16,7 +16,7 @@ let menu_template = [
             {
                 label: 'Open...',
                 accelerator: 'CmdOrCtrl+o',
-                click(menuItem, browserWindow, event) {
+                click(menuItem, browserWindow, _) {
                     openFile(browserWindow);
                 }
             },
@@ -238,33 +238,14 @@ let menu_template = [
             {
                 label: 'About',
                 click: () => {
-                    shell.openExternal('https://github.com/wtongze')
+                    shell.openExternal('https://github.com/sparkmemo/sparkdown')
                 }
             },
             {
-                label: 'Version: 0.1 Beta'
+                label: 'Version: 1.0.0 (Beta)'
             }
         ]
     },
-    {
-        label: 'Mode',
-        submenu: [
-            {
-                label: 'Github Flavored Markdown',
-                type: 'radio',
-                click(menuItem, browserWindow, event) {
-                    console.log('GFM');
-                }
-            },
-            {
-                label: 'SparkMEMO One-Click-Publish',
-                type: 'radio',
-                click(menuItem, browserWindow, event) {
-                    console.log('SparkMEMO');
-                }
-            }
-        ]
-    }
 ];
 
 let editor;
@@ -285,8 +266,6 @@ function createEditor() {
     });
 
     editor.loadFile('view/editor.html');
-
-    // win.webContents.openDevTools()
 
     editor.on('closed', () => {
         editor = null;

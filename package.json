@@ -22,6 +22,7 @@
   "dependencies": {
     "electron-store": "^5.1.0",
     "emmet": "^2.0.0-rc.9",
+    "github-markdown-css": "^3.0.1",
     "marked": "^0.8.0"
   }
 }

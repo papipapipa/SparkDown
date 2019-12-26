@@ -14,12 +14,19 @@
           href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css"
+          integrity="sha256-HbgiGHMLxHZ3kkAiixyvnaaZFNjNWLYKD/QG6PWaQPc=" crossorigin="anonymous"/>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/atom-one-light.min.css">
+
     <title>SparkDown - Editor</title>
 
     <style>
-        body {
-            /*font-family: 'Ubuntu Mono', sans-serif;*/
-        }
+        /*body, .markdown-body {*/
+        /*    font-family: 'Ubuntu Mono', sans-serif !important;*/
+        /*}*/
 
         .col {
             padding: 0;
@@ -48,10 +55,18 @@
             height: 100vh;
             padding: 1rem;
             overflow-y: auto;
+            word-break: break-word;
         }
 
         .right img {
-            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .right mjx-math {
+            margin-left: 0.25rem;
+            margin-right: 0.25rem;
         }
     </style>
 </head>
@@ -68,7 +83,7 @@
         </div>
         <div class="col">
             <div class="md-out-div">
-                <div class="right" id="md-output">
+                <div class="right markdown-body" id="md-output">
                 </div>
             </div>
         </div>
@@ -102,15 +117,42 @@
 </script>
 
 <!-- Customized JavaScript -->
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$$', '$$'], ['\\(', '\\)']]
+        }
+    };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>
     const {ipcRenderer} = require('electron');
     ipcRenderer.on('render-md-result', (event, md_result) => {
-        console.log(md_result);
+        // console.log(md_result);
         document.getElementById('md-output').innerHTML = md_result;
+
+        // adjust output
+        let eleList = document.getElementsByTagName('code');
+        for (let ele of eleList) {
+            if (ele.className.includes('language-alert-') && ele.className.split('-')[2] !== '') {
+                let alertType = ele.className.split('-')[2];
+                console.log('adjusting for alerts');
+                ele.parentElement.outerHTML = `<div class="alert alert-${alertType}" role="alert">${ele.innerText}</div>`
+            }
+        }
+
+        // code highlight
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+
+        MathJax.typeset();
     });
 
     ipcRenderer.on('user-settings-result', (event, settings_result) => {
-        document.getElementsByTagName('body')[0].style.fontFamily = settings_result['fontFamily'];
+        // document.getElementsByTagName('body')[0].style.fontFamily = settings_result['fontFamily'];
         console.log('User settings applied.');
     });
 
@@ -118,8 +160,8 @@
     let md_src_ele = document.getElementById('md-src');
 
     function render_md() {
-        console.log('prepare to render:', md_src_ele.value);
-        ipcRenderer.send('render-md', md_src_ele.value)
+        // console.log('prepare to render:', md_src_ele.value);
+        ipcRenderer.send('render-md', md_src_ele.value);
     }
 
     ipcRenderer.send('request-user-settings');
@@ -149,7 +191,7 @@
 
     ipcRenderer.on('put-md-src', (event, new_md_src) => {
         md_src_ele.value = new_md_src;
-        ipcRenderer.send('render-md', md_src_ele.value)
+        ipcRenderer.send('render-md', md_src_ele.value);
     });
 
     ipcRenderer.on('patch-md-src', (event, delta_md_src) => {
@@ -195,8 +237,6 @@
             role: 'selectAll'
         }];
     const menu = Menu.buildFromTemplate(contextMenuTemplate);
-
-
     document.addEventListener('contextmenu', (event) => {
         event.preventDefault();
         menu.popup();
