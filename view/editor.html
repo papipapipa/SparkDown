@@ -11,15 +11,15 @@
 
     <!-- Material Design for Bootstrap CSS -->
     <link rel="stylesheet"
-          href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+          href="css/lib/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css"
+          href="css/lib/github-markdown.min.css"
           integrity="sha256-HbgiGHMLxHZ3kkAiixyvnaaZFNjNWLYKD/QG6PWaQPc=" crossorigin="anonymous"/>
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/atom-one-light.min.css">
+          href="css/lib/atom-one-light.min.css">
 
     <title>SparkDown - Editor</title>
 
@@ -97,17 +97,17 @@
     window.module = module;
     module = undefined;
 }</script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"
+<script src="js/lib/jquery.slim.min.js"
         integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 <script>if (window.module) module = window.module;</script>
 
-<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
+<script src="js/lib/popper.js"
         integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
         crossorigin="anonymous"></script>
 <!-- SnackbarJS plugin -->
-<script src="https://cdn.jsdelivr.net/gh/FezVrasta/snackbarjs@1.1.0/dist/snackbar.min.js"></script>
+<script src="js/lib/snackbar.min.js"></script>
 
-<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"
+<script src="js/lib/bootstrap-material-design.js"
         integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
         crossorigin="anonymous"></script>
 <script>
@@ -117,8 +117,8 @@
 </script>
 
 <!-- Customized JavaScript -->
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="js/lib/highlight.min.js"></script>
+<script src="js/lib/polyfill.min.js"></script>
 <script>
     MathJax = {
         tex: {
@@ -126,7 +126,7 @@
         }
     };
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script id="MathJax-script" src="js/lib/tex-mml-chtml.js"></script>
 <script>
     const {ipcRenderer} = require('electron');
     ipcRenderer.on('render-md-result', (event, md_result) => {
