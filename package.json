@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/sparkmemo/SparkDown#readme",
   "devDependencies": {
-    "electron": "^7.1.5"
+    "electron": "^7.1.5",
+    "electron-builder": "^21.2.0",
+    "electron-packager": "^14.1.1"
   },
   "dependencies": {
     "electron-store": "^5.1.0",

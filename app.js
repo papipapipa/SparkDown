@@ -273,7 +273,12 @@ function createEditor() {
 
     editor.on('closed', () => {
         editor = null;
-    })
+    });
+
+    editor.webContents.on('will-navigate', (event, url) => {
+        event.preventDefault();
+        shell.openExternal(url);
+    });
 }
 
 function createSettings() {
