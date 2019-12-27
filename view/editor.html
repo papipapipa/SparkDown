@@ -56,6 +56,7 @@
             padding: 1rem;
             overflow-y: auto;
             word-break: break-word;
+            max-width: 50vw;
         }
 
         .right img {
@@ -71,13 +72,12 @@
     </style>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container-fluid" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
     <div class="row">
         <div class="col">
             <form class="md-src-form">
                 <div class="form-group bmd-form-group md-src-div">
-                    <textarea class="form-control left" id="md-src" ondrop="dropHandler(event);"
-                              ondragover="dragOverHandler(event);"></textarea>
+                    <textarea class="form-control left" id="md-src"></textarea>
                 </div>
             </form>
         </div>
@@ -203,8 +203,10 @@
         ipcRenderer.send('render-md', md_src_ele.value);
     });
 
-    ipcRenderer.on('patch-md-src', (event, delta_md_src) => {
-        md_src_ele.value += delta_md_src;
+    ipcRenderer.on('patch-md-src', (event, delta_md_src, delta2_md_src = '') => {
+        let start = md_src_ele.selectionStart;
+        md_src_ele.value = md_src_ele.value.substring(0, start) + delta_md_src + delta2_md_src + md_src_ele.value.substring(start);
+        md_src_ele.selectionEnd = start + delta_md_src.length;
         ipcRenderer.send('render-md', md_src_ele.value);
     });
 

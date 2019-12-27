@@ -1,6 +1,7 @@
-const {app, BrowserWindow, ipcMain, Menu, shell, nativeTheme} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, shell, nativeTheme, dialog} = require('electron');
 const marked = require('marked');
 const Store = require('electron-store');
+const fs = require('fs');
 
 let menu_template = [
     {
@@ -201,15 +202,15 @@ let menu_template = [
                     insertText(browserWindow, '$$', '$$');
                 }
             },
-            {
-                type: 'separator'
-            },
-            {
-                label: 'Table',
-                accelerator: 'CmdOrCtrl+t',
-                click(menuItem, browserWindow, event){
-                }
-            }
+            // {
+            //     type: 'separator'
+            // },
+            // {
+            //     label: 'Table',
+            //     accelerator: 'CmdOrCtrl+t',
+            //     click(menuItem, browserWindow, event){
+            //     }
+            // }
         ]
     },
     {
@@ -238,7 +239,7 @@ let menu_template = [
             {
                 label: 'About',
                 click: () => {
-                    shell.openExternal('https://github.com/sparkmemo/sparkdown')
+                    shell.openExternal('https://github.com/sparkmemo/sparkdown');
                 }
             },
             {
@@ -332,12 +333,68 @@ ipcMain.on('md-process-drag-drop', (event, file) => {
     let fileNameArray = file.name.split('.');
     let file_suffix = fileNameArray[fileNameArray.length - 1];
     let img_suffix = new RegExp(/^(jpg|png)$/);
+    let md_suffix = new RegExp(/^(md)$/);
     if(img_suffix.test(file_suffix)){
-        let img_md = `\n![](file://${encodeURI(file.path)})`;
+        let img_md = `\n![](file://${encodeURI(file.path)})\n`;
         editor.webContents.send('patch-md-src', img_md);
+    } else if(md_suffix.test(file_suffix)) {
+        let contents = fs.readFileSync(file.path,'utf8');
+        editor.webContents.send('put-md-src', contents);
+        editor.setTitle(`SparkDown - ${file.name}`);
     }
 });
 
 ipcMain.on('get-md-src-result', (event, get_md_result) => {
     console.log(get_md_result);
 });
+
+function insertText(window, prefix, suffix) {
+    window.webContents.send('patch-md-src', prefix, suffix);
+}
+
+function openFile(window) {
+    let path = dialog.showOpenDialogSync(window, {
+        title: 'Open File...',
+        filters: [
+            {
+                name: 'Markdown Files',
+                extensions: ['md']
+            },
+            {
+                name: 'All Files',
+                extensions: ['*']
+            }
+        ],
+        properties: ['openFile']
+    });
+
+    let contents = fs.readFileSync(path[0],'utf8');
+    // console.log(contents);
+    window.webContents.send('put-md-src', contents);
+
+    let fileName = path[0].replace(/^.*[\\\/]/, '');
+    window.setTitle(`SparkDown - ${fileName}`);
+}
+
+function saveFile(window) {
+    let path = dialog.showSaveDialogSync(window, {
+        title: 'Save File',
+        filters: [
+            {
+                name: 'Markdown Files',
+                extensions: ['md']
+            },
+            {
+                name: 'All Files',
+                extensions: ['*']
+            }
+        ]
+    });
+
+    window.webContents.executeJavaScript('document.getElementById(\'md-src\').value').then((content) => {
+        fs.writeFileSync(path, content);
+    });
+
+    let fileName = path.replace(/^.*[\\\/]/, '');
+    window.setTitle(`SparkDown - ${fileName}`);
+}
