@@ -284,7 +284,7 @@ function createEditor() {
 function createSettings() {
     settings = new BrowserWindow({
         width: 480,
-        height: 540,
+        height: 620,
         webPreferences: {
             nodeIntegration: true
         }

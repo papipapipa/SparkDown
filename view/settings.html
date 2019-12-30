@@ -21,7 +21,7 @@
 </head>
 <body>
 <div class="container-fluid">
-    <div class="settings">
+    <div class="settings mt-3 mb-3">
         <form>
             <div class="form-group">
                 <label for="fontFamily">Customized Font Family</label>
@@ -29,7 +29,15 @@
             </div>
             <div class="form-group form-check">
                 <input type="checkbox" id="fontOverrideCheck" class="form-check-input" onclick="toggleFontFamilyArea()">
-                <label for="fontOverrideCheck">Override the default fonts in current theme with above value.</label>
+                <label for="fontOverrideCheck">Override the default font family in current theme with above value.</label>
+            </div>
+            <div class="form-group">
+                <label for="fontSize">Customized Font Size (px)</label>
+                <input type="number" id="fontSize" class="form-control" readonly>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" id="fontSizeOverrideCheck" class="form-check-input" onclick="toggleFontSizeArea()">
+                <label for="fontSizeOverrideCheck">Override the default font size in current theme with above value.</label>
             </div>
             <div class="form-group">
                 <label for="imgHandleOption">Image Assets Handling Option</label>
@@ -77,6 +85,8 @@
         let new_settings = {
             'fontFamily': document.getElementById('fontFamily').value,
             'fontOverrideCheck': document.getElementById('fontOverrideCheck').checked,
+            'fontSize': document.getElementById('fontSize').value,
+            'fontSizeOverrideCheck': document.getElementById('fontSizeOverrideCheck').checked,
             'imgHandleOption': document.getElementById('imgHandleOption').value,
             'uiLangOption': document.getElementById('uiLangOption').value
         };
@@ -99,16 +109,25 @@
     ipcRenderer.on('user-settings-result', (event, settings_result) => {
         document.getElementById('fontFamily').value = settings_result['fontFamily'];
         document.getElementById('fontOverrideCheck').checked = settings_result['fontOverrideCheck'];
+        document.getElementById('fontSize').value = settings_result['fontSize'];
+        document.getElementById('fontSizeOverrideCheck').checked = settings_result['fontSizeOverrideCheck'];
         document.getElementById('imgHandleOption').value = settings_result['imgHandleOption'];
         document.getElementById('uiLangOption').value = settings_result['uiLangOption'];
         if (settings_result['fontOverrideCheck'] === true){
             document.getElementById('fontFamily').removeAttribute('readonly');
+        }
+        if (settings_result['fontSizeOverrideCheck'] === true){
+            document.getElementById('fontSize').removeAttribute('readonly');
         }
         console.log('User settings received.');
     });
 
     function toggleFontFamilyArea() {
         document.getElementById('fontFamily').toggleAttribute('readonly');
+    }
+
+    function toggleFontSizeArea() {
+        document.getElementById('fontSize').toggleAttribute('readonly');
     }
 </script>
 </body>

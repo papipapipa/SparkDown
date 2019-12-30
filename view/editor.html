@@ -61,8 +61,8 @@
 
         .right img {
             max-width: 100%;
-            margin: 0 auto;
-            display: block;
+            /*margin: 0 auto;
+            display: block;*/
         }
 
         .right mjx-math {
@@ -126,7 +126,7 @@
         }
     };
 </script>
-<script id="MathJax-script" src="js/lib/tex-mml-chtml.js"></script>
+<script id="MathJax-script" src="js/lib/tex-mml-svg.js"></script>
 <script>
     const {ipcRenderer} = require('electron');
     ipcRenderer.on('render-md-result', (event, md_result) => {
@@ -160,6 +160,16 @@
             document.getElementById('md-src').style.cssText = '';
             document.getElementById('md-output').style.cssText = '';
             console.log('Cancel font overriding completed.');
+        }
+
+        if (settings_result.fontSizeOverrideCheck === true) {
+            document.getElementById('md-src').style.fontSize = `${settings_result.fontSize}px`;
+            document.getElementById('md-output').style.fontSize = `${settings_result.fontSize}px`;
+            console.log('FontSize overriding completed.');
+        } else {
+            document.getElementById('md-src').style.fontSize = 'initial';
+            document.getElementById('md-output').style.fontSize = 'initial';
+            console.log('Cancel fontSize overriding completed.');
         }
         // $('head').append(`<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/${settings_result.highlightThemeOption}.min.css">`);
         console.log('User settings applied.');
